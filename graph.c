@@ -69,3 +69,73 @@ int is_adjacent(Graph G, vertex v, vertex w) {
 
   return 0;
 }
+
+void graph_show(Graph G) {
+  for (vertex v = 0; v < G->V; ++v) {
+    printf("%d:", v);
+    for (link a = G->adj[v]; a != NULL; a = a->next)
+      printf(" %d", a->w);
+    printf("\n");
+  }
+}
+
+void graph_destroy(Graph G) {
+  if (G == NULL)
+    return;
+
+  for (vertex v = 0; v < G->V; ++v) {
+    link a = G->adj[v];
+    while (a != NULL) {
+      link temp = a;
+      a = a->next;
+      free(temp);
+    }
+  }
+
+  free(G->adj);
+  free(G);
+}
+
+void graph_remove_arc(Graph G, vertex v, vertex w) {
+  if (G == NULL)
+    return;
+
+  link prev = NULL;
+  link curr = G->adj[v];
+
+  while (curr != NULL) {
+    if (curr->w == w) {
+      if (prev == NULL)
+        G->adj[v] = curr->next;   // primero
+      else
+        prev->next = curr->next;  // medio o final
+
+      free(curr);
+      G->A--;
+      return;
+    }
+    prev = curr;
+    curr = curr->next;
+  }
+}
+
+int graph_undir(Graph G) {
+  for (vertex v = 0; v < G->V; ++v) {
+    for (link a = G->adj[v]; a != NULL; a = a->next) {
+      vertex w = a->w;
+      int found = 0;
+
+      // existe w -> v?
+      for (link b = G->adj[w]; b != NULL; b = b->next) {
+        if (b->w == v) {
+          found = 1;
+          break;
+        }
+      }
+
+      if (!found)
+        return 0; // falta el arco opuesto no es dirigido
+    }
+  }
+  return 1; // todos los arcos tienen su opuesto
+}
