@@ -57,3 +57,15 @@ int graph_indeg(Graph G, vertex v) {
   }
   return c;
 }
+
+int is_adjacent(Graph G, vertex v, vertex w) {
+  for (link a = G->adj[v]; a != NULL; a = a->next)
+    if (a->w == w)
+      return 1;
+
+  for (link a = G->adj[w]; a != NULL; a = a->next)
+    if (a->w == v)
+      return 1;
+
+  return 0;
+}
